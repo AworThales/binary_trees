@@ -1,93 +1,34 @@
 #include "binary_trees.h"
-/**
- * check_sub_tree_Left - to check if all nodes are smaller than
- * the root specified
- * @node: a node in a tree to be verify condition
- * @max: a value to be compare
- * Return: 1 if all nodes are smaller or equal or 0 if not
- */
-int check_sub_tree_Left(const binary_tree_t *node, int max)
-{
-	int right_check = 0, left_check = 0;
 
-	if (node == NULL)
-	{
-		return (1);
-	}
-	else
-	{
-		if (node->n >= max)
-			return (0);
-		left_check = check_sub_tree_Left(node->left_check, max);
-		right_check = check_sub_tree_Left(node->right_check, max);
-		if (left_check == right_check && left_check == 1)
-			return (1);
-		return (0);
-	}
-}
 /**
- * check_sub_tree_Right - to check if all the nodes are bigger than the
- * root specified
- * @node: a node in a tree to verify condition
- * @min: a value to be compare
- * Return: 1 if all is bigger or equal or 0 if not
+ * helper - to checks if a binary tree is a valid Binary Search Tree
+ * @tree: pointer to the root node of the tree to check
+ * @min: Lower bound for the node that being checked.
+ * @max: Upper bound for the node that being checked.
+ *
+ * Return: 1 if tree is NULL means its a BST
+ *	   0 if its not BST
  */
-int check_sub_tree_Right(const binary_tree_t *node, int min)
+int helper(const binary_tree_t *tree, int min, int max)
 {
-	int right_check = 0, left_check = 0;
-
-	if (node == NULL)
-	{
+	if (!tree)
 		return (1);
-	}
-	else
-	{
-		if (node->n <= min)
-			return (0);
-		left_check = check_sub_tree_Right(node->left_check, min);
-		right_check = check_sub_tree_Right(node->right_check, min);
-		if (left_check == right_check && left_check == 1)
-			return (1);
+	if (tree->n < min || tree->n > max)
 		return (0);
-	}
+	return (helper(tree->left, min, tree->n - 1) &&
+			helper(tree->right, tree->n + 1, max));
 }
+
 /**
- * binary_tree_is_bst - to says if a tree is the bst or not
- * the process here is first verify that a left_check node be smaller than the root
- * then verify if the right_check node is bigger than th root.
- * after that verify if the left_check subtree has nodes smaller than root
- * and the right_check subtree has bigger nodes than root
- * @tree: a node that point to a tree to check
- * Return: 1 if it is a BST or 0 if not
+ * binary_tree_is_bst - to checks if a binary tree is a valid Binary Search Tree
+ * @tree: pointer to the root node of the tree to check
+ *
+ * Return: 1 if tree is a valid BST
+ *	   0 if its not a BST or tree is NULL
  */
 int binary_tree_is_bst(const binary_tree_t *tree)
 {
-	int right_check = 2, my_value = 0, left_check = 2;
-
-	if (tree == NULL)
+	if (!tree)
 		return (0);
-	if (tree->left_check && tree->left_check->n > tree->n)
-		return (0);
-	if (tree->right_check && tree->right_check->n < tree->n)
-		return (0);
-	if (tree->left_check && tree->left_check->n < tree->n)
-	{
-		my_value = check_sub_tree_Left(tree->left_check, tree->n);
-		if (my_value == 0)
-			return (0);
-		left_check = binary_tree_is_bst(tree->left_check);
-	}
-	if (tree->right_check && tree->right_check->n > tree->n)
-	{
-		my_value = check_sub_tree_Right(tree->right_check, tree->n);
-		if (my_value == 0)
-			return (0);
-		right_check = binary_tree_is_bst(tree->right_check);
-	}
-	if (left_check != 2 || right_check != 2)
-	{
-		if (left_check == 0 || right_check == 0)
-			return (0);
-	}
-	return (1);
+	return (helper(tree, INT_MIN, INT_MAX));
 }
